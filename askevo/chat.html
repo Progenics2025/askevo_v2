@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>askEVo - Chat</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #e8f4f8 0%, #f0e8f8 100%);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .chat-container {
+            display: flex;
+            height: 100vh;
+            padding: 16px;
+            gap: 16px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            min-width: 260px;
+            background: white;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 20px 14px;
+        }
+
+        .sidebar-header {
+            margin-bottom: 16px;
+        }
+
+        .sidebar-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 14px;
+            letter-spacing: 0.5px;
+        }
+
+        .new-chat-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 11px 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .new-chat-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+        }
+
+        .settings-btn {
+            width: 30px;
+            height: 30px;
+            background: #1a1a1a;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin-left: 8px;
+            font-size: 0.8rem;
+        }
+
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            margin-top: 16px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 0 6px;
+        }
+
+        .section-title {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .clear-all-btn {
+            background: none;
+            border: none;
+            color: #667eea;
+            font-size: 0.7rem;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .history-list {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .history-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 2px;
+        }
+
+        .history-item:hover {
+            background: #f5f5f5;
+        }
+
+        .history-item.active {
+            background: #e8f0fe;
+        }
+
+        .chat-icon {
+            font-size: 0.95rem;
+            flex-shrink: 0;
+        }
+
+        .history-title {
+            font-size: 0.8rem;
+            color: #333;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex: 1;
+        }
+
+        .section-divider {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #ccc;
+            margin: 16px 0 10px 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-footer {
+            padding-top: 14px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .settings-item {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 10px;
+            background: none;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #666;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+        }
+
+        .settings-item:hover {
+            background: #f5f5f5;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 9px 10px;
+            background: #f8f8f8;
+            border-radius: 10px;
+        }
+
+        .avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .user-name {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #333;
+            flex: 1;
+        }
+
+        /* Main Chat Area */
+        .main-content {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 28px;
+        }
+
+        .message {
+            display: flex;
+            margin-bottom: 28px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.bot {
+            justify-content: flex-start;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.8rem;
+            margin-right: 11px;
+            flex-shrink: 0;
+        }
+
+        .message-content {
+            max-width: 70%;
+        }
+
+        .message-header {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            margin-bottom: 7px;
+        }
+
+        .message-sender {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #333;
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            color: #999;
+        }
+
+        .message-bubble {
+            padding: 14px 16px;
+            border-radius: 15px;
+            margin-bottom: 7px;
+            line-height: 1.6;
+        }
+
+        .message.bot .message-bubble {
+            background: #f8f9fa;
+            color: #333;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message.user .message-bubble {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message-bubble p {
+            margin: 0 0 11px 0;
+            font-size: 0.9rem;
+        }
+
+        .message-bubble p:last-child {
+            margin-bottom: 0;
+        }
+
+        .message-bubble ol {
+            margin: 7px 0;
+            padding-left: 18px;
+        }
+
+        .message-bubble li {
+            margin: 7px 0;
+            font-size: 0.9rem;
+        }
+
+        .message-actions {
+            display: flex;
+            gap: 3px;
+            padding: 0 7px;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            padding: 5px 7px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            font-size: 0.8rem;
+        }
+
+        .action-btn:hover {
+            background: #f0f0f0;
+            color: #667eea;
+        }
+
+        .regenerate-btn {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: #667eea;
+            font-size: 0.75rem;
+        }
+
+        /* Input Area */
+        .input-area {
+            padding: 18px 28px 22px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .input-hint {
+            font-size: 0.7rem;
+            color: #999;
+            margin-bottom: 11px;
+        }
+
+        .input-container {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 11px 14px;
+            border: 1px solid #e8e8e8;
+        }
+
+        .input-container:focus-within {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .input-icon {
+            color: #ccc;
+            font-size: 1rem;
+        }
+
+        .input-container input {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 0.9rem;
+            color: #333;
+        }
+
+        .input-container input::placeholder {
+            color: #aaa;
+        }
+
+        .mic-btn {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .mic-btn:hover {
+            color: #667eea;
+        }
+
+        .mic-btn.recording {
+            color: #ff4444;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .send-btn {
+            width: 34px;
+            height: 34px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Feedback Button */
+        .feedback-btn {
+            position: fixed;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%) rotate(-90deg);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 9px 18px;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="chat-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2 class="sidebar-title">CHAT A.I+</h2>
+                <div style="display: flex; align-items: center;">
+                    <button class="new-chat-btn" onclick="newChat()">
+                        <i class="fas fa-plus"></i>
+                        <span>New chat</span>
+                    </button>
+                    <button class="settings-btn">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="sidebar-content">
+                <div class="section-header">
+                    <h3 class="section-title">Your conversations</h3>
+                    <button class="clear-all-btn" onclick="clearAll()">Clear All</button>
+                </div>
+                <ul class="history-list" id="recentChats">
+                    <li class="history-item">
+                        <span class="chat-icon">🎮</span>
+                        <span class="history-title">Create Html Game Environment...</span>
+                    </li>
+                    <li class="history-item">
+                        <span class="chat-icon">📝</span>
+                        <span class="history-title">Apply To Leave For Emergency</span>
+                    </li>
+                    <li class="history-item">
+                        <span class="chat-icon">🎨</span>
+                        <span class="history-title">What Is UX Design?</span>
+                    </li>
+                    <li class="history-item">
+                        <span class="chat-icon">💳</span>
+                        <span class="history-title">Create POS System</span>
+                    </li>
+                    <li class="history-item">
+                        <span class="chat-icon">🔍</span>
+                        <span class="history-title">What Is UX Audit?</span>
+                    </li>
+                    <li class="history-item active">
+                        <span class="chat-icon">🤖</span>
+                        <span class="history-title">Create Chatbot GPT...</span>
+                    </li>
+                </ul>
+
+                <h3 class="section-divider">Last 7 Days</h3>
+                <ul class="history-list" id="last7Days">
+                    <li class="history-item">
+                        <span class="chat-icon">❓</span>
+                        <span class="history-title">How Chat GPT Work?</span>
+                    </li>
+                    <li class="history-item">
+                        <span class="chat-icon">💰</span>
+                        <span class="history-title">Crypto Landing App Name</span>
+                    </li>
+                    <li class="history-item">
+                        <span class="chat-icon">📚</span>
+                        <span class="history-title">Charakter Grammar Types</span>
+                    </li>
+                    <li class="history-item" style="opacity: 0.5;">
+                        <span class="chat-icon">📊</span>
+                        <span class="history-title">Min Stress For Binary DFA</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="sidebar-footer">
+                <button class="settings-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </button>
+                <div class="user-profile">
+                    <div class="avatar">AN</div>
+                    <span class="user-name">Andrew Nelson</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Chat Area -->
+        <div class="main-content">
+            <div class="messages-container" id="messagesContainer">
+                <!-- Bot Message 1 -->
+                <div class="message bot">
+                    <div class="message-avatar">AI</div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <span class="message-sender">Chat A.I+</span>
+                            <span class="message-time">9:30</span>
+                        </div>
+                        <div class="message-bubble">
+                            <p>Create a chatbot gpt using python language what will be step by that</p>
+                        </div>
+                        <div class="message-actions">
+                            <button class="action-btn" onclick="copyMessage(this)" title="Copy">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                            <button class="action-btn" title="Like">
+                                <i class="fas fa-thumbs-up"></i>
+                            </button>
+                            <button class="action-btn" title="Dislike">
+                                <i class="fas fa-thumbs-down"></i>
+                            </button>
+                            <button class="action-btn" title="More">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bot Message 2 -->
+                <div class="message bot">
+                    <div class="message-avatar">AI</div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <span class="message-sender">Chat A.I+</span>
+                            <span class="message-time">9:30</span>
+                        </div>
+                        <div class="message-bubble">
+                            <p>Sure, I can help you get started with creating a chatbot using GPT in Python. Here are
+                                the basic steps you'll need to follow:</p>
+                            <ol>
+                                <li><strong>Install the required libraries:</strong> You'll need to install the
+                                    transformers library from Hugging Face to use GPT. You can install it using pip: You
+                                    can install using pip install transformers</li>
+                                <li><strong>Load the pre-trained model:</strong> GPT comes in several sizes and
+                                    versions, so you'll need to choose the one that fits your needs. This loads the L3B
+                                    parameter version of GPT-Neo, which is a powerful and relatively recent model.</li>
+                                <li><strong>Create a chatbot loop:</strong> You'll need to create a loop that takes user
+                                    input, generates a response using the GPT model, and outputs it to the user. Here's
+                                    an example loop that uses the input() function to get user input and the generate()
+                                    function to generate a response. This loop will keep running until the user
+                                    interrupts.</li>
+                                <li><strong>Add some personality to the chatbot:</strong> While GPT is great at
+                                    generating text, it doesn't have any inherent personality. You can make your chatbot
+                                    more interesting by adding custom prompts or responses that reflect your desired
+                                    personality. This will make the chatbot seem more human-like and engaging.</li>
+                            </ol>
+                            <p>These are just the basic steps to get started with a GPT chatbot in Python. Depending on
+                                your requirements, you may need to add more features or complexity to the chatbot. Good
+                                luck!</p>
+                        </div>
+                        <div class="message-actions">
+                            <button class="action-btn" onclick="copyMessage(this)" title="Copy">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                            <button class="action-btn" title="Like">
+                                <i class="fas fa-thumbs-up"></i>
+                            </button>
+                            <button class="action-btn" title="Dislike">
+                                <i class="fas fa-thumbs-down"></i>
+                            </button>
+                            <button class="action-btn" title="More">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <button class="regenerate-btn">
+                                <i class="fas fa-redo"></i>
+                                <span>Regenerate</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Message -->
+                <div class="message user">
+                    <div class="message-content">
+                        <div class="message-header" style="justify-content: flex-end;">
+                            <span class="message-time">9:31</span>
+                        </div>
+                        <div class="message-bubble">
+                            <p>What is use of that chatbot ?</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bot Message 3 -->
+                <div class="message bot">
+                    <div class="message-avatar">AI</div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <span class="message-sender">Chat A.I+</span>
+                            <span class="message-time">9:32</span>
+                        </div>
+                        <div class="message-bubble">
+                            <p>Chatbots can be used for a wide range of purposes, including:</p>
+                            <p><strong>Customer service:</strong> chatbots can handle frequently asked questions,
+                                provide basic support, and help customers navigate through a website or app.</p>
+                        </div>
+                        <div class="message-actions">
+                            <button class="action-btn" onclick="copyMessage(this)" title="Copy">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                            <button class="action-btn" title="Like">
+                                <i class="fas fa-thumbs-up"></i>
+                            </button>
+                            <button class="action-btn" title="Dislike">
+                                <i class="fas fa-thumbs-down"></i>
+                            </button>
+                            <button class="action-btn" title="More">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-area">
+                <p class="input-hint">Customer service chatbots can handle frequently asked questions, provide basic
+                    support, and help customers...</p>
+                <div class="input-container">
+                    <i class="fas fa-smile input-icon"></i>
+                    <input type="text" id="messageInput" placeholder="What is your next?..."
+                        onkeypress="handleKeyPress(event)">
+                    <button class="mic-btn" id="micBtn" onclick="toggleSpeechRecognition()" title="Voice input">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                    <button class="send-btn" onclick="sendMessage()">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Button -->
+    <button class="feedback-btn">
+        <i class="fas fa-comment-dots"></i> Give feedback
+    </button>
+
+    <script>
+        // Check if user is logged in
+        if (!sessionStorage.getItem('isLoggedIn')) {
+            window.location.href = 'index.html';
+        }
+
+        // Speech Recognition Setup
+        let recognition = null;
+        let isRecording = false;
+
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+
+            recognition.onstart = function () {
+                isRecording = true;
+                const micBtn = document.getElementById('micBtn');
+                micBtn.classList.add('recording');
+                micBtn.title = 'Recording... Click to stop';
+            };
+
+            recognition.onresult = function (event) {
+                const transcript = event.results[0][0].transcript;
+                const input = document.getElementById('messageInput');
+                input.value = transcript;
+                input.focus();
+            };
+
+            recognition.onerror = function (event) {
+                console.error('Speech recognition error:', event.error);
+                isRecording = false;
+                const micBtn = document.getElementById('micBtn');
+                micBtn.classList.remove('recording');
+                micBtn.title = 'Voice input';
+
+                if (event.error === 'not-allowed') {
+                    alert('Microphone access denied. Please allow microphone access in your browser settings.');
+                } else if (event.error === 'no-speech') {
+                    alert('No speech detected. Please try again.');
+                }
+            };
+
+            recognition.onend = function () {
+                isRecording = false;
+                const micBtn = document.getElementById('micBtn');
+                micBtn.classList.remove('recording');
+                micBtn.title = 'Voice input';
+            };
+        }
+
+        function toggleSpeechRecognition() {
+            if (!recognition) {
+                alert('Speech recognition is not supported in your browser. Please use Chrome, Edge, or Safari.');
+                return;
+            }
+
+            if (isRecording) {
+                recognition.stop();
+            } else {
+                try {
+                    recognition.start();
+                } catch (error) {
+                    console.error('Error starting recognition:', error);
+                }
+            }
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+
+            if (!message) return;
+
+            addMessage(message, 'user');
+            input.value = '';
+
+            setTimeout(() => {
+                const responses = [
+                    "That's an interesting question! Let me help you with that.",
+                    "I understand what you're asking. Here's what I can tell you...",
+                    "Great question! Based on my knowledge, I can explain that...",
+                    "I'm here to help! Let me provide you with some information about that."
+                ];
+                const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                addMessage(randomResponse, 'bot');
+            }, 1000);
+        }
+
+        function addMessage(text, sender) {
+            const container = document.getElementById('messagesContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+
+            const now = new Date();
+            const time = now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0');
+
+            if (sender === 'bot') {
+                messageDiv.innerHTML = `
+                    <div class="message-avatar">AI</div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <span class="message-sender">Chat A.I+</span>
+                            <span class="message-time">${time}</span>
+                        </div>
+                        <div class="message-bubble">
+                            <p>${text}</p>
+                        </div>
+                        <div class="message-actions">
+                            <button class="action-btn" onclick="copyMessage(this)" title="Copy">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                            <button class="action-btn" title="Like">
+                                <i class="fas fa-thumbs-up"></i>
+                            </button>
+                            <button class="action-btn" title="Dislike">
+                                <i class="fas fa-thumbs-down"></i>
+                            </button>
+                            <button class="action-btn" title="More">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                messageDiv.innerHTML = `
+                    <div class="message-content">
+                        <div class="message-header" style="justify-content: flex-end;">
+                            <span class="message-time">${time}</span>
+                        </div>
+                        <div class="message-bubble">
+                            <p>${text}</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            container.appendChild(messageDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function copyMessage(btn) {
+            const messageText = btn.closest('.message-content').querySelector('.message-bubble').textContent;
+            navigator.clipboard.writeText(messageText);
+            const icon = btn.querySelector('i');
+            icon.className = 'fas fa-check';
+            setTimeout(() => {
+                icon.className = 'fas fa-copy';
+            }, 2000);
+        }
+
+        function newChat() {
+            if (confirm('Start a new chat? Current conversation will be saved to history.')) {
+                document.getElementById('messagesContainer').innerHTML = `
+                    <div class="message bot">
+                        <div class="message-avatar">AI</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-sender">Chat A.I+</span>
+                                <span class="message-time">Now</span>
+                            </div>
+                            <div class="message-bubble">
+                                <p>Hello! I'm askEVo, your AI assistant. How can I help you today?</p>
+                            </div>
+                            <div class="message-actions">
+                                <button class="action-btn" onclick="copyMessage(this)" title="Copy">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                                <button class="action-btn" title="Like">
+                                    <i class="fas fa-thumbs-up"></i>
+                                </button>
+                                <button class="action-btn" title="Dislike">
+                                    <i class="fas fa-thumbs-down"></i>
+                                </button>
+                                <button class="action-btn" title="More">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function clearAll() {
+            if (confirm('Clear all chat history? This cannot be undone.')) {
+                document.getElementById('recentChats').innerHTML = '';
+                document.getElementById('last7Days').innerHTML = '';
+            }
+        }
+    </script>
+</body>
+
+</html>

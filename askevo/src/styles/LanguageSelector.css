@@ -1,0 +1,54 @@
+.language-selector {
+  padding: 1rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+}
+
+.language-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.language-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.language-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+}
+
+.language-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.language-btn.active {
+  background: rgba(59, 130, 246, 0.3);
+  border-color: rgb(59, 130, 246);
+  color: rgb(147, 197, 253);
+}
+
+.language-btn .flag {
+  font-size: 1.25rem;
+}
+
+.language-btn .name {
+  flex: 1;
+}

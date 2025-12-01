@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>askEVo Login - Progenics</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
+        /* --- Basic Reset & Body Styling --- */
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            color: #e0e0e0;
+        }
+
+        /* --- Background Container & Effects --- */
+        .background-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        #gradient-canvas {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        #particles-js {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        /* --- Login Container & Box --- */
+        .login-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 420px;
+            background: rgba(10, 10, 26, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            text-align: center;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* --- Logo Placeholder --- */
+        .logo-placeholder {
+            width: 80px;
+            height: 80px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px auto;
+            color: #a0a0a0;
+            font-size: 1rem;
+            font-weight: 500;
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+        }
+
+        /* --- Titles and Text --- */
+        .app-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .app-subtitle {
+            color: #a0a0a0;
+            margin-bottom: 30px;
+        }
+
+        /* --- Form Elements --- */
+        .login-form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: #c0c0c0;
+        }
+
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #6a11cb;
+            box-shadow: 0 0 15px rgba(106, 17, 203, 0.5);
+        }
+
+        /* --- Buttons and Links --- */
+        .login-button {
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background-image: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(37, 117, 252, 0.3);
+        }
+
+        .forgot-password-link {
+            margin-top: 20px;
+            color: #a0a0a0;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password-link:hover {
+            color: #ffffff;
+        }
+
+        /* --- Branding Corner --- */
+        .branding-corner {
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            text-align: right;
+            z-index: 100;
+            opacity: 0.8;
+        }
+
+        .branding-corner span {
+            display: block;
+            font-size: 12px;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .branding-corner strong {
+            display: block;
+            font-size: 18px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.8);
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Background elements -->
+    <div class="background-container">
+        <canvas id="gradient-canvas"></canvas>
+        <div id="particles-js"></div>
+    </div>
+
+    <!-- Login Form Container -->
+    <div class="login-container">
+        <div class="login-box">
+            <div class="logo-placeholder">Logo</div>
+            <h1 class="app-title">askEVo</h1>
+            <p class="app-subtitle">Welcome back! Please log in to your account.</p>
+
+            <form class="login-form">
+                <div class="input-group">
+                    <label for="email" class="input-label">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="admin@progenics.com" required>
+                </div>
+                <div class="input-group">
+                    <label for="password" class="input-label">Password</label>
+                    <input type="password" id="password" name="password" placeholder="progenics123" required>
+                </div>
+
+                <button type="submit" class="login-button">Login</button>
+
+                <a href="#" class="forgot-password-link">Forgot Password?</a>
+            </form>
+        </div>
+    </div>
+
+    <!-- Branding Element -->
+    <div class="branding-corner">
+        <span>Powered by</span>
+        <strong>Progenics</strong>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/granim/2.0.0/granim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"></script>
+
+    <!-- Custom Initialization Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize Granim.js for the animated gradient background
+            const granimInstance = new Granim({
+                element: '#gradient-canvas',
+                direction: 'diagonal',
+                isPausedWhenNotInView: true,
+                states: {
+                    "default-state": {
+                        gradients: [
+                            ['#6a11cb', '#2575fc'],
+                            ['#3a1c71', '#ffaf7b'],
+                            ['#1e3c72', '#2a5298']
+                        ],
+                        transitionSpeed: 7000
+                    }
+                }
+            });
+
+            // Initialize tsParticles for the interactive particle network
+            tsParticles.load("particles-js", {
+                fpsLimit: 60,
+                interactivity: {
+                    events: {
+                        onHover: {
+                            enable: true,
+                            mode: "grab",
+                        },
+                        resize: true,
+                    },
+                    modes: {
+                        grab: {
+                            distance: 150,
+                            links: {
+                                opacity: 1,
+                            },
+                        },
+                    },
+                },
+                particles: {
+                    color: {
+                        value: "#ffffff",
+                    },
+                    links: {
+                        color: "#ffffff",
+                        distance: 150,
+                        enable: true,
+                        opacity: 0.4,
+                        width: 1,
+                    },
+                    move: {
+                        direction: "none",
+                        enable: true,
+                        outModes: "bounce",
+                        random: false,
+                        speed: 0.8,
+                        straight: false,
+                    },
+                    number: {
+                        density: {
+                            enable: true,
+                            area: 800,
+                        },
+                        value: 120,
+                    },
+                    opacity: {
+                        value: 0.4,
+                    },
+                    shape: {
+                        type: "circle",
+                    },
+                    size: {
+                        value: { min: 1, max: 2.5 },
+                    },
+                },
+                detectRetina: true,
+            });
+
+            // Handle login form submission
+            const loginForm = document.querySelector('.login-form');
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+
+                // Test credentials
+                if (email === 'admin@progenics.com' && password === 'progenics123') {
+                    // Store login state
+                    sessionStorage.setItem('isLoggedIn', 'true');
+                    sessionStorage.setItem('userEmail', email);
+                    // Navigate to chat page
+                    window.location.href = 'chat.html';
+                } else {
+                    alert('Invalid credentials!\n\nUse:\nEmail: admin@progenics.com\nPassword: progenics123');
+                }
+            });
+        });
+
+    </script>
+</body>
+
+</html>

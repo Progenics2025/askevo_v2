@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AskEvo - AI Genetic Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="logo">
+                <span class="logo-icon">🧬</span>
+                <h1>AskEvo</h1>
+            </div>
+            <p class="tagline">AI Genetic Assistant for Healthcare Professionals</p>
+        </header>
+
+        <main class="chat-container">
+            <div class="chat-messages" id="chatMessages">
+                <div class="message assistant-message">
+                    <div class="message-content">
+                        <strong>Welcome to AskEvo - AI Genetic Assistant</strong> 🧬
+                        <br><br>
+                        I'm here to help doctors and genetic counsellors with genetic diagnosis support. I can assist with:
+                        <ul>
+                            <li><strong>Genetic Conditions</strong> - Information about inherited disorders</li>
+                            <li><strong>Inheritance Patterns</strong> - Understanding how conditions are passed on</li>
+                            <li><strong>Genetic Testing</strong> - Guidance on appropriate diagnostic tests</li>
+                            <li><strong>Symptom Analysis</strong> - Differential diagnosis support</li>
+                            <li><strong>Risk Assessment</strong> - Genetic counseling considerations</li>
+                        </ul>
+                        How can I assist you today?
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-input-container">
+                <div class="quick-actions">
+                    <button class="quick-btn" data-query="Tell me about cystic fibrosis">Cystic Fibrosis</button>
+                    <button class="quick-btn" data-query="Explain inheritance patterns">Inheritance Patterns</button>
+                    <button class="quick-btn" data-query="What genetic tests are available?">Genetic Tests</button>
+                    <button class="quick-btn" data-query="Patient has muscle weakness symptoms">Symptom Analysis</button>
+                </div>
+                <form class="chat-form" id="chatForm">
+                    <textarea
+                        id="userInput"
+                        placeholder="Ask about genetic conditions, inheritance patterns, or describe symptoms..."
+                        rows="2"
+                        autofocus
+                    ></textarea>
+                    <button type="submit" id="sendBtn">
+                        <span class="send-icon">➤</span>
+                    </button>
+                </form>
+            </div>
+        </main>
+
+        <footer class="app-footer">
+            <p>AskEvo v1.0.0 | For healthcare professional use only | Not a substitute for clinical judgment</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

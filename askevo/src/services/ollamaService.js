@@ -1,7 +1,10 @@
 import axios from 'axios';
 
-const OLLAMA_API_URL = import.meta.env.VITE_OLLAMA_URL || `http://${window.location.hostname}:11434`;
-const MODEL_NAME = 'gemma3n:latest';
+// Use Vite proxy in development to avoid CORS issues
+// In development: /ollama will proxy to http://localhost:11434
+// In production: Should be configured via .env to point to proper endpoint
+const OLLAMA_API_URL = import.meta.env.VITE_OLLAMA_URL || '/ollama';
+const MODEL_NAME = import.meta.env.VITE_OLLAMA_MODEL || 'gemma3n:latest';
 
 const ollamaClient = axios.create({
   baseURL: OLLAMA_API_URL,
@@ -46,7 +49,7 @@ export const ollamaService = {
     }
   },
 
-  async generateStreamResponse(prompt, context = '', language = 'en', onChunk) {
+  async generateStreamResponse(prompt, context = '', language = 'en', onChunk, abortSignal = null) {
     try {
       const languageMap = {
         'en': 'English',
@@ -69,7 +72,7 @@ export const ollamaService = {
         ? `${languageInstruction}Context: ${context}\n\nQuestion: ${prompt}`
         : `${languageInstruction}${prompt}`;
 
-      const response = await fetch(`${OLLAMA_API_URL}/api/generate`, {
+      const fetchOptions = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -80,7 +83,14 @@ export const ollamaService = {
           stream: true,
           temperature: 0.7,
         }),
-      });
+      };
+
+      // Add abort signal if provided
+      if (abortSignal) {
+        fetchOptions.signal = abortSignal;
+      }
+
+      const response = await fetch(`${OLLAMA_API_URL}/api/generate`, fetchOptions);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);

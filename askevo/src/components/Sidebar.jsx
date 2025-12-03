@@ -54,18 +54,20 @@ const Sidebar = ({ isOpen, toggleSidebar, currentSessionId, onSelectSession, ses
 
     return (
         <>
-            <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
+            <aside className={`sidebar ${isOpen ? 'open' : 'closed'}`}>
                 <div className="sidebar-header">
-                    <h2 className="sidebar-title">askEVo</h2>
-                    <button className="mobile-close-btn" onClick={toggleSidebar}>
-                        <X size={24} />
-                    </button>
+                    <h2 className="sidebar-title">askEVO</h2>
                 </div>
 
                 <div className="sidebar-content">
                     <button className="new-chat-btn" onClick={handleNewChat}>
                         <Plus size={20} />
                         <span>{t('chat.newChat')}</span>
+                    </button>
+
+                    <button className="new-chat-btn pedigree-btn" onClick={() => navigate('/pedigree')} style={{ marginTop: '8px', background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}>
+                        <span style={{ marginRight: '8px' }}>🧬</span>
+                        <span>Pedigree Builder</span>
                     </button>
 
                     <div className="history-container">

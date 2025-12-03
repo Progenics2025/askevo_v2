@@ -5,6 +5,48 @@
     background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
     position: relative;
     overflow: hidden;
+    gap: 0;
+}
+
+/* Floating Toggle Button - Always Visible */
+.floating-toggle-btn {
+    position: fixed;
+    left: 16px;
+    top: 16px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    cursor: pointer;
+    color: #667eea;
+    z-index: 1001;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 0;
+}
+
+.floating-toggle-btn:hover {
+    background: rgba(255, 255, 255, 1);
+    border-color: #667eea;
+    transform: scale(1.08);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+}
+
+.floating-toggle-btn:active {
+    transform: scale(0.96);
+}
+
+@media (max-width: 768px) {
+    .floating-toggle-btn {
+        left: 12px;
+        top: 12px;
+        width: 40px;
+        height: 40px;
+    }
 }
 
 /* Sidebar */
@@ -12,12 +54,27 @@
     width: 300px;
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(20px);
-    border-right: 1px solid rgba(0, 0, 0, 0.05);
     display: flex;
     flex-direction: column;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
     z-index: 100;
+    transform: translateX(0);
+    flex-shrink: 0;
+}
+
+/* Closed state - slides out to the left */
+.sidebar.closed {
+    transform: translateX(-100%);
+    width: 0;
+    flex-basis: 0;
+}
+
+/* Open state - fully visible */
+.sidebar.open {
+    transform: translateX(0);
+    width: 300px;
+    flex-basis: 300px;
 }
 
 .sidebar-header {
@@ -261,10 +318,12 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    transition: margin-left 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     height: 100%;
     overflow: hidden;
+    width: 100%;
+    min-width: 0;
 }
 
 .top-bar {
@@ -303,6 +362,10 @@
         top: 0;
         height: 100vh;
         z-index: 1000;
+        width: 300px;
+    }
+
+    .sidebar.closed {
         transform: translateX(-100%);
     }
 
@@ -310,8 +373,8 @@
         transform: translateX(0);
     }
 
-    .mobile-close-btn {
-        display: block;
+    .sidebar-toggle-btn {
+        display: flex;
     }
 
     .main-content {

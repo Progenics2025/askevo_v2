@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider, useAuth } from './context/AuthContext';
 import LoginPage from './pages/LoginPage';
 import ChatPage from './pages/ChatPage';
+import PedigreePage from './pages/PedigreePage';
 import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 
@@ -42,6 +43,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <ChatPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/pedigree"
+        element={
+          <ProtectedRoute>
+            <PedigreePage />
           </ProtectedRoute>
         }
       />

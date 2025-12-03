@@ -7,6 +7,7 @@ import pool from './config/database.js';
 import authRoutes from './routes/auth.js';
 import chatRoutes from './routes/chat.js';
 import fileRoutes from './routes/files.js';
+import pedigreeRoutes from './routes/pedigree.js';
 
 dotenv.config();
 
@@ -15,10 +16,56 @@ const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(helmet());
+
+// CORS Configuration - Development-friendly but can be secured for production
+const isDevelopment = process.env.NODE_ENV !== 'production';
+
+// Parse CORS_ORIGIN if it contains comma-separated values
+const envOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(',').map(o => o.trim()).filter(Boolean)
+  : [];
+
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:3000',
+  'http://localhost:4173',
+  'https://chat.progenicslabs.com',
+  'http://chat.progenicslabs.com',
+  ...envOrigins
+].filter(Boolean);
+
+console.log('Allowed CORS origins:', allowedOrigins);
+
 app.use(cors({
-  origin: true, // Allow any origin
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, Postman, curl, etc.)
+    if (!origin) return callback(null, true);
+
+    // In development, allow any localhost or local network origin
+    if (isDevelopment) {
+      const isLocalhost = origin.includes('localhost') || origin.includes('127.0.0.1');
+      const isLocalNetwork = /^https?:\/\/(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[01])\.)/.test(origin);
+
+      if (isLocalhost || isLocalNetwork) {
+        console.log('Development mode: allowing origin:', origin);
+        return callback(null, true);
+      }
+    }
+
+    // Check against whitelist
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.warn('⚠️  CORS blocked origin:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
 app.use(morgan('combined'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -31,6 +78,7 @@ app.get('/api/health', (req, res) => {
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/pedigree', pedigreeRoutes);
 app.use('/api', fileRoutes);
 
 // Error handling middleware

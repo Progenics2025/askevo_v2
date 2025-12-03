@@ -3,6 +3,7 @@ import { Send, Paperclip, Mic, Square } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import MessageBubble from './MessageBubble';
+import WelcomeMessage from './WelcomeMessage';
 import ollamaService from '../services/ollamaService';
 import genomicsApiService from '../services/genomicsApiService';
 import chatService from '../services/chatService';
@@ -23,6 +24,7 @@ const ChatArea = ({ selectedSessionId, onSessionCreated }) => {
     const [currentSessionId, setCurrentSessionId] = useState(null);
     const [ollamaConnected, setOllamaConnected] = useState(false);
     const [modelName, setModelName] = useState('');
+    const [showWelcome, setShowWelcome] = useState(true);
     const messagesEndRef = useRef(null);
     const recognitionRef = useRef(null);
     const [abortController, setAbortController] = useState(null);
@@ -32,16 +34,13 @@ const ChatArea = ({ selectedSessionId, onSessionCreated }) => {
         const initializeChat = async () => {
             if (selectedSessionId) {
                 setCurrentSessionId(selectedSessionId);
+                setShowWelcome(false);
                 await loadMessages(selectedSessionId);
             } else {
-                // Just show welcome message, don't create a session yet
+                // Show welcome message for new chat
                 setCurrentSessionId(null);
-                setMessages([{
-                    id: 1,
-                    text: `Hello ${user?.username || 'there'}! I am Progenics AI. How can I assist you with genomics today?`,
-                    sender: 'bot',
-                    timestamp: new Date()
-                }]);
+                setMessages([]);
+                setShowWelcome(true);
             }
 
             // Check Ollama connection
@@ -141,6 +140,10 @@ const ChatArea = ({ selectedSessionId, onSessionCreated }) => {
         if (!inputValue.trim() || isLoading) return;
 
         const userMessage = inputValue.trim();
+
+        // Hide welcome message when first message is sent
+        setShowWelcome(false);
+
         const newUserMsg = {
             id: Date.now(),
             text: userMessage,
@@ -411,20 +414,24 @@ const ChatArea = ({ selectedSessionId, onSessionCreated }) => {
                     ref={containerRef}
                     style={{ paddingBottom: '180px' }}
                 >
-                    {messages.map(msg => (
-                        <MessageBubble
-                            key={msg.id}
-                            message={msg}
-                            onCopy={handleCopy}
-                            onDelete={handleDelete}
-                            onLike={handleLike}
-                            onDislike={handleDislike}
-                            onFeedback={handleFeedback}
-                            onSpeak={msg.sender === 'bot' ? handleSpeak : null}
-                            onRetry={msg.sender === 'bot' ? handleRetry : null}
-                            onShare={msg.sender === 'bot' ? handleShare : null}
-                        />
-                    ))}
+                    {showWelcome && messages.length === 0 ? (
+                        <WelcomeMessage />
+                    ) : (
+                        messages.map(msg => (
+                            <MessageBubble
+                                key={msg.id}
+                                message={msg}
+                                onCopy={handleCopy}
+                                onDelete={handleDelete}
+                                onLike={handleLike}
+                                onDislike={handleDislike}
+                                onFeedback={handleFeedback}
+                                onSpeak={msg.sender === 'bot' ? handleSpeak : null}
+                                onRetry={msg.sender === 'bot' ? handleRetry : null}
+                                onShare={msg.sender === 'bot' ? handleShare : null}
+                            />
+                        ))
+                    )}
                     {isLoading && (
                         <div className="loading-indicator">
                             <div className="spinner"></div>
@@ -437,20 +444,9 @@ const ChatArea = ({ selectedSessionId, onSessionCreated }) => {
                 <ConversationScrollButton containerRef={containerRef} />
             </Conversation>
 
-            {/* Disclaimer - Above Input */}
-            <p className="disclaimer-text">
-                {isListening ? (
-                    <span className="listening-indicator">
-                        <span className="pulse-dot"></span> Listening...
-                    </span>
-                ) : (
-                    t('chat.disclaimer')
-                )}
-            </p>
-
             <div className="input-area-wrapper">
                 <form onSubmit={handleSend} className="input-container glass-panel">
-                    <button type="button" className="attach-btn btn-icon">
+                    <button type="button" className="attach-btn btn-icon" style={{ display: 'none' }} onClick={(e) => e.preventDefault()}>
                         <Paperclip size={20} />
                     </button>
 
@@ -484,13 +480,18 @@ const ChatArea = ({ selectedSessionId, onSessionCreated }) => {
                     ) : (
                         <button
                             type="submit"
-                            className="send-btn btn-primary"
+                            className="send-btn"
                             disabled={!inputValue.trim()}
                         >
                             <Send size={18} />
                         </button>
                     )}
                 </form>
+            </div>
+
+            {/* Progenics AI Disclaimer - Below Input */}
+            <div className="progenics-disclaimer-bar">
+                <p>Progenics AI can make mistakes. Please verify important information with healthcare professionals.</p>
             </div>
         </div>
     );

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
 import ChatArea from '../components/ChatArea';
-import { Menu } from 'lucide-react';
+import { Menu, ChevronLeft, ChevronRight } from 'lucide-react';
 import '../styles/ChatPage.css';
 import chatService from '../services/chatService';
 import { useAuth } from '../context/AuthContext';
@@ -71,6 +71,16 @@ const ChatPage = () => {
 
     return (
         <div className="chat-page">
+            {/* Floating Toggle Button - Always Visible */}
+            <button 
+                className="floating-toggle-btn" 
+                onClick={toggleSidebar}
+                title={isSidebarOpen ? 'Close sidebar' : 'Open sidebar'}
+                aria-label={isSidebarOpen ? 'Close sidebar' : 'Open sidebar'}
+            >
+                {isSidebarOpen ? <ChevronLeft size={24} /> : <ChevronRight size={24} />}
+            </button>
+
             <Sidebar
                 isOpen={isSidebarOpen}
                 toggleSidebar={toggleSidebar}
